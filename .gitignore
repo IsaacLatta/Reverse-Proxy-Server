@@ -1,2 +1,3 @@
-/Reverse-Proxy/proxy/TEST
+/Proxy/TEST
+/Proxy/.vscode
 *.log
