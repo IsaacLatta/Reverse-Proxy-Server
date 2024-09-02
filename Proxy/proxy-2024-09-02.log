@@ -1,0 +1,61 @@
+[2024-09-02 10:13] [0.0.0.0]INFO: proxy: running
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 588
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 588
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 603
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 600
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 588
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 637
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 588
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 576
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 611
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
+[2024-09-02 10:14] [0.0.0.0]INFO: client connected: 127.0.0.1
+[2024-09-02 10:14] [0.0.0.0]INFO: connected to server: 127.0.0.1
+[2024-09-02 10:14] [127.0.0.1]INFO: session started: 
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes received: 588
+[2024-09-02 10:14] [127.0.0.1]INFO: bytes written to backend: 65536
+[2024-09-02 10:14] [127.0.0.1]INFO: session ended: 
