@@ -37,9 +37,9 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
     }
     std::string client_IP = session->clientIP();
     
-    auto backend_sock = std::make_shared<asio::ip::tcp::socket>(asio::ip::tcp::socket(this->_io_context));
+    asio::ip::tcp::socket backend_sock(this->_io_context);
     asio::error_code ec;
-    backend_sock->connect(this->_backend_endpoint, ec);
+    backend_sock.connect(this->_backend_endpoint, ec);
     if(ec)
     {
         logger::log(nullptr, "ERROR " + ec.message());
@@ -47,8 +47,8 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
         return;
     }
     
-    logger::debug("INFO", "connected to server", backend_sock->remote_endpoint().address().to_string() , __FILE__, __LINE__);
-    session->start(backend_sock); 
+    logger::debug("INFO", "connected to server, client", backend_sock.remote_endpoint().address().to_string() , __FILE__, __LINE__);
+    session->start(std::move(backend_sock)); 
 
     auto new_session = std::make_shared<Session>(asio::ip::tcp::socket(this->_io_context));
     this->_acceptor->async_accept(new_session->get_socket(),

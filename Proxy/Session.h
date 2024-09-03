@@ -21,16 +21,17 @@ class Session : public std::enable_shared_from_this<Session>
     std::chrono::time_point<std::chrono::system_clock> end_time;
 
     Session(asio::ip::tcp::socket sock);
-    void start(std::shared_ptr<asio::ip::tcp::socket> _backend_sock);
-
+    void start(asio::ip::tcp::socket backend_sock);
     asio::ip::tcp::socket& get_socket();
     std::string clientIP();
     
     private:
     std::shared_ptr<asio::ip::tcp::socket> _sock;
-    
-    void write_backend(const asio::error_code& error, const std::shared_ptr<asio::ip::tcp::socket>& backend_sock, const std::shared_ptr<std::vector<char>>& buffer);
-    void forward_response(const asio::error_code& error, const std::shared_ptr<asio::ip::tcp::socket>& backend_sock, const std::shared_ptr<std::vector<char>>& buffer, std::shared_ptr<std::size_t> bytes_read);
+    std::shared_ptr<asio::ip::tcp::socket> _backend_sock;
+    std::vector<char> buffer;
+
+    void write_backend(const asio::error_code& error);
+    void forward_response(const asio::error_code& error, std::shared_ptr<std::size_t> bytes_read);
 };
 
 #endif
