@@ -4,6 +4,7 @@
 Session::Session(asio::ip::tcp::socket sock)
 {
     this->_sock = std::make_shared<asio::ip::tcp::socket>(std::move(sock));
+    this->bytes_transfered = 0;
 }
 
 std::string Session::clientIP()
@@ -25,7 +26,8 @@ void Session::forward_response(const asio::error_code& error, const std::shared_
     {
         if(error && error != asio::error::eof)
         {
-            logger::log(self->clientIP(), "ERROR", "async_read_some", error.message() , __FILE__, __LINE__);
+            logger::debug("ERROR", "async_read_some", error.message() , __FILE__, __LINE__);
+            logger::log(self, "ERROR " + error.message());
             self->_sock->close();
             backend_sock->close();
             return;
@@ -33,12 +35,14 @@ void Session::forward_response(const asio::error_code& error, const std::shared_
 
         if(error == asio::error::eof)
         {
-            logger::log(self->clientIP(), "INFO", "session ended", "", __FILE__, __LINE__);
+            self->end_time = std::chrono::system_clock::now();
+            logger::log(self, "INFO");
             self->_sock->close();
             backend_sock->close();
             return;
         }
 
+        self->bytes_transfered += bytes;
         *bytes_read += bytes;
         asio::async_write(*(self->_sock), asio::buffer(buffer->data() + *bytes_read - bytes, bytes),
         [self, backend_sock, buffer, bytes_read](const asio::error_code& error, std::size_t bytes)
@@ -60,6 +64,7 @@ void Session::write_backend(const asio::error_code& error, const std::shared_ptr
     if(error)
     {
         logger::debug("ERROR", "async_read_until", error.message() , __FILE__, __LINE__);
+        logger::log(self, "ERROR" + error.message());
         self->_sock->close();
         backend_sock->close();
         return;
@@ -72,12 +77,12 @@ void Session::write_backend(const asio::error_code& error, const std::shared_ptr
     {
         if(error)
         {
-            logger::log(self->clientIP(), "ERROR", "async_write", error.message() , __FILE__, __LINE__);
+            logger::debug("ERROR", "async_write", error.message() , __FILE__, __LINE__);
+            logger::log(self, "ERROR" + error.message());
             self->_sock->close();
             backend_sock->close();
             return;
         }
-        logger::log(self->clientIP(), "INFO", "bytes written to backend", std::to_string(bytes), __FILE__, __LINE__);
         auto bytes_read = std::make_shared<std::size_t>(0);
         auto resp_buffer = std::make_shared<std::vector<char>> (BUFFER_SIZE);
         self->forward_response(error, backend_sock, resp_buffer, bytes_read);
@@ -88,12 +93,12 @@ void Session::start(std::shared_ptr<asio::ip::tcp::socket> backend_sock)
 {
     auto self = shared_from_this();
     
-    logger::log(self->clientIP(), "INFO", "session started", "", __FILE__, __LINE__);
     auto buffer = std::make_shared<std::vector<char>> (BUFFER_SIZE);
+    self->start_time = std::chrono::system_clock::now();
     self->_sock->async_read_some(asio::buffer(*buffer), // read the http header
     [self, backend_sock, buffer](const asio::error_code& error, std::size_t bytes)
     {
-        logger::log(self->clientIP(), "INFO", "bytes received", std::to_string(bytes), __FILE__, __LINE__);
+        self->bytes_transfered += bytes;
         self->write_backend(error, backend_sock, buffer);
     });
 }

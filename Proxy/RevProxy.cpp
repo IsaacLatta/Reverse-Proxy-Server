@@ -19,7 +19,7 @@ void RevProxy::run()
         this->accept_handler(error, session);
     });
     
-    logger::log(this->_endpoint.address().to_string(), "INFO", "proxy", "running" , __FILE__, __LINE__);
+    logger::log(nullptr, "INFO proxy running");
     this->_io_context.run();
 }
 
@@ -27,7 +27,7 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
 {
     if(error)
     {
-        logger::log(this->_endpoint.address().to_string(), "ERROR", "async_accept", error.message() , __FILE__, __LINE__);
+        logger::debug("ERROR", "async_accept", error.message() , __FILE__, __LINE__);
         this->_acceptor->async_accept(session->get_socket(),
         [this, session](const asio::error_code& error)
         {
@@ -36,19 +36,18 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
         return;
     }
     std::string client_IP = session->clientIP();
-    logger::log(this->_endpoint.address().to_string(), "INFO", "client connected", client_IP ,__FILE__, __LINE__);
-
+    
     auto backend_sock = std::make_shared<asio::ip::tcp::socket>(asio::ip::tcp::socket(this->_io_context));
     asio::error_code ec;
     backend_sock->connect(this->_backend_endpoint, ec);
     if(ec)
     {
-        logger::log(this->_endpoint.address().to_string(), "ERROR", "connection to server: " +  
-        this->_backend_endpoint.address().to_string() + "failed for: " + client_IP + " failed", ec.message() , __FILE__, __LINE__);
+        logger::log(nullptr, "ERROR " + ec.message());
+        logger::debug("ERROR", "connect", ec.message(), __FILE__, __LINE__);
         return;
     }
     
-    logger::log(this->_endpoint.address().to_string(),"INFO", "connected to server", backend_sock->remote_endpoint().address().to_string() , __FILE__, __LINE__);
+    logger::debug("INFO", "connected to server", backend_sock->remote_endpoint().address().to_string() , __FILE__, __LINE__);
     session->start(backend_sock); 
 
     auto new_session = std::make_shared<Session>(asio::ip::tcp::socket(this->_io_context));

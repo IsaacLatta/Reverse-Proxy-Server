@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <chrono>
 
 #include "logger.h"
 
@@ -14,8 +15,13 @@
 class Session : public std::enable_shared_from_this<Session>
 {
     public:
+    long bytes_transfered;
+    std::chrono::time_point<std::chrono::system_clock> start_time;
+    std::chrono::time_point<std::chrono::system_clock> end_time;
+
     Session(asio::ip::tcp::socket sock);
     void start(std::shared_ptr<asio::ip::tcp::socket> _backend_sock);
+
     asio::ip::tcp::socket& get_socket();
     std::string clientIP();
     
