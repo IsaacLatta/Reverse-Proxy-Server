@@ -4,7 +4,7 @@
 Session::Session(asio::ip::tcp::socket sock)
 {
     this->_sock = std::make_shared<asio::ip::tcp::socket>(std::move(sock));
-    this->bytes_transfered = 0;
+    this->bytes_transferred = 0;
 }
 
 std::string Session::clientIP()
@@ -42,7 +42,7 @@ void Session::forward_response(const asio::error_code& error, const std::shared_
             return;
         }
 
-        self->bytes_transfered += bytes;
+        self->bytes_transferred += bytes;
         *bytes_read += bytes;
         asio::async_write(*(self->_sock), asio::buffer(buffer->data() + *bytes_read - bytes, bytes),
         [self, backend_sock, buffer, bytes_read](const asio::error_code& error, std::size_t bytes)
@@ -83,6 +83,7 @@ void Session::write_backend(const asio::error_code& error, const std::shared_ptr
             backend_sock->close();
             return;
         }
+        self->RTT_start_time = std::chrono::system_clock::now();
         auto bytes_read = std::make_shared<std::size_t>(0);
         auto resp_buffer = std::make_shared<std::vector<char>> (BUFFER_SIZE);
         self->forward_response(error, backend_sock, resp_buffer, bytes_read);
@@ -98,7 +99,7 @@ void Session::start(std::shared_ptr<asio::ip::tcp::socket> backend_sock)
     self->_sock->async_read_some(asio::buffer(*buffer), // read the http header
     [self, backend_sock, buffer](const asio::error_code& error, std::size_t bytes)
     {
-        self->bytes_transfered += bytes;
+        self->bytes_transferred += bytes;
         self->write_backend(error, backend_sock, buffer);
     });
 }

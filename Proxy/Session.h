@@ -15,8 +15,9 @@
 class Session : public std::enable_shared_from_this<Session>
 {
     public:
-    long bytes_transfered;
+    long bytes_transferred;
     std::chrono::time_point<std::chrono::system_clock> start_time;
+    std::chrono::time_point<std::chrono::system_clock> RTT_start_time;
     std::chrono::time_point<std::chrono::system_clock> end_time;
 
     Session(asio::ip::tcp::socket sock);
