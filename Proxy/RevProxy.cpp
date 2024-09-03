@@ -23,20 +23,24 @@ void RevProxy::run()
     this->_io_context.run();
 }
 
+void RevProxy::accept_caller(std::shared_ptr<Session> session)
+{
+    this->_acceptor->async_accept(session->get_socket(),
+    [this, session](const asio::error_code& error)
+    {
+        this->accept_handler(error, session);
+    });
+}
+
 void RevProxy::accept_handler(const asio::error_code& error, const std::shared_ptr<Session>& session)
 {
     if(error)
     {
-        logger::debug("ERROR", "async_accept", error.message() , __FILE__, __LINE__);
-        this->_acceptor->async_accept(session->get_socket(),
-        [this, session](const asio::error_code& error)
-        {
-            this->accept_handler(error, session);
-        });
+        logger::debug("ERROR", "async_accept", error.message(), __FILE__, __LINE__);
+        accept_caller(session);
         return;
     }
-    std::string client_IP = session->clientIP();
-    
+
     asio::ip::tcp::socket backend_sock(this->_io_context);
     asio::error_code ec;
     backend_sock.connect(this->_backend_endpoint, ec);
@@ -44,16 +48,11 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
     {
         logger::log(nullptr, "ERROR " + ec.message());
         logger::debug("ERROR", "connect", ec.message(), __FILE__, __LINE__);
+        accept_caller(std::make_shared<Session>(asio::ip::tcp::socket(this->_io_context)));
         return;
     }
     
-    logger::debug("INFO", "connected to server, client", backend_sock.remote_endpoint().address().to_string() , __FILE__, __LINE__);
+    logger::debug("INFO", "connected to server", backend_sock.remote_endpoint().address().to_string() , __FILE__, __LINE__);
     session->start(std::move(backend_sock)); 
-
-    auto new_session = std::make_shared<Session>(asio::ip::tcp::socket(this->_io_context));
-    this->_acceptor->async_accept(new_session->get_socket(),
-    [this, new_session](const asio::error_code& error)
-    {
-        this->accept_handler(error, new_session);
-    });
+    accept_caller(std::make_shared<Session>(asio::ip::tcp::socket(this->_io_context)));
 }

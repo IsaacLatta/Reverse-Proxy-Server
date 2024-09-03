@@ -47,7 +47,7 @@ void Session::forward_response(const asio::error_code& error, std::shared_ptr<st
         asio::async_write(*(self->_sock), asio::buffer(self->buffer.data() + *bytes_read - bytes, bytes),
         [self, bytes_read](const asio::error_code& error, std::size_t bytes)
         {
-            if(BUFFER_SIZE - *bytes_read < 10000)
+            if(self->buffer.size() - *bytes_read < 10000)
             {
                 *bytes_read = 0;
                 memset(self->buffer.data(), 0, self->buffer.size());

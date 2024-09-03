@@ -20,6 +20,7 @@ class RevProxy
     std::string _backend_IP;
     int _port, _backend_port;
 
+    void accept_caller(std::shared_ptr<Session> session);
     void accept_handler(const asio::error_code& error, const std::shared_ptr<Session>& session);
 };
 
