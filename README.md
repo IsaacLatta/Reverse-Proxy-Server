@@ -52,7 +52,7 @@ g++ -I/path/to/asio -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
 
 - The proxy accepts incoming network request up to a size of 64KB. To change, modify the BUFFER_SIZE macro in the Session.h file.
 - The proxy will read outgoing data from its backend server until the connection is closed, or it receives the eof error on the socket fd.
-- A new conncetion is created for each network request, and closed on any errors or when the response forwarding is complete.
+- A new connection is created for each network request, and closed on any errors or when the response forwarding is complete.
 - To see a basic usage message, run the proxy with no arguments:
 ```bash
 ./proxy
