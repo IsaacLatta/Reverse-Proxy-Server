@@ -34,7 +34,7 @@ git clone https://IsaacLatta/Reverse-Proxy
 cd /path/to/Reverse-Proxy
 ```
 
-3. Compile the project
+3. Compile the project:
 ```bash
 g++ -I/path/to/asio -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
 ```
