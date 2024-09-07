@@ -1,3 +1,5 @@
 /Proxy/TEST/
 *.vscode
 /Proxy/*.log
+*.crt
+*.key
