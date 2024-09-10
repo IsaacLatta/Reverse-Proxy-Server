@@ -55,7 +55,7 @@ void logger::log(const std::shared_ptr<Session>& session, std::string type)
     }
     else
     {
-        log_msg = "[" + time +"] " +  type + " [client " + session->clientIP() + "] " + " Latency: " + 
+        log_msg = "[" + time +"] " +  type + " [client " + "address" + "] " + " Latency: " + 
         std::to_string(duration_ms(session->start_time, session->end_time)) + "ms, RTT: " + 
         std::to_string(duration_ms(session->RTT_start_time, session->end_time))  + "ms, Data Transferred: " + formatBytes(session->bytes_transferred) + "\n";
     }
