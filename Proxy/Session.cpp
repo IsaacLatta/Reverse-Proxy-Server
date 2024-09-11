@@ -80,11 +80,9 @@ void Session::start(std::unique_ptr<Socket>&& backend_sock)
     self->_sock->do_handshake(
     [self](const asio::error_code& error)
     {
-        logger::debug("INFO", "session", "handshake callback called", __FILE__, __LINE__);
         self->_sock->do_read(self->buffer.data(), self->buffer.size(), 
         [self](const asio::error_code& error, std::size_t bytes)
         {
-            logger::debug("INFO", "session", "read callback called", __FILE__, __LINE__);
             self->bytes_transferred += bytes;
             self->write_backend(error);
         });

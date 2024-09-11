@@ -22,11 +22,9 @@ void HTTPSocket::do_write(char* buffer, std::size_t buffer_size, const std::func
 
 void HTTPSocket::do_read(char* buffer, std::size_t buffer_size, const std::function<void(const asio::error_code&, std::size_t)>& callback)
 {
-    logger::debug("INFO", "HTTPSocket", "do_read called", __FILE__, __LINE__);
     this->_socket.async_read_some(asio::buffer(buffer, buffer_size),    
     [this, callback](const asio::error_code& error, std::size_t bytes)
     {
-        logger::debug("INFO", "HTTPSocket", " callback parameter called", __FILE__, __LINE__);
         callback(error, bytes);
     });
 }

@@ -1,27 +1,32 @@
 #include "RevProxy.h"
 
-RevProxy::RevProxy(int local_port, const std::string& server_IP, int server_port)
+RevProxy::RevProxy(int local_port, const std::string& server_IP, int server_port, const std::string& cert_path, const std::string& key_path, bool ssl) 
+    : _ssl_context(asio::ssl::context::tlsv12), 
+    _port(local_port), 
+    _backend_port(server_port), 
+    _backend_IP(server_IP), 
+    _ssl(ssl)
 {
-    this->_port = local_port;
-    this->_backend_port = server_port;
-    this->_backend_IP = server_IP;
-    this->_endpoint = std::move(asio::ip::tcp::endpoint(asio::ip::tcp::v4(), this->_port));
-    this->_acceptor = std::make_shared<asio::ip::tcp::acceptor>(asio::ip::tcp::acceptor(this->_io_context, this->_endpoint));
-    this->_backend_endpoint =  std::move(asio::ip::tcp::endpoint(asio::ip::address::from_string(this->_backend_IP), this->_backend_port));
-    //this->ssl_context = asio::ssl::context(asio::ssl::context::tlsv12);
-    //load_certificate(cert_path, key_path);
+    this->_endpoint = asio::ip::tcp::endpoint(asio::ip::tcp::v4(), this->_port);
+    _acceptor = std::make_shared<asio::ip::tcp::acceptor>(this->_io_context, this->_endpoint);
+    _backend_endpoint = asio::ip::tcp::endpoint(asio::ip::address::from_string(this->_backend_IP), this->_backend_port);
+
+    if(_ssl && !cert_path.empty() && !key_path.empty())
+    {
+        load_certificate(cert_path, key_path);
+    }
+    else
+        std::cout << "ssl not detected\n";
 }
 
-/*
 void RevProxy::load_certificate(const std::string& cert_path, const std::string& key_path)
 {
-    this->ssl_context.set_options(asio::ssl::context::default_workarounds | // workaround common bugs
+    this->_ssl_context.set_options(asio::ssl::context::default_workarounds | // workaround common bugs
                                   asio::ssl::context::no_sslv2 | // disable sslv2
                                   asio::ssl::context::single_dh_use); // enable new dh use for each session
-    this->ssl_context.use_certificate_chain_file(cert_path);
-    this->ssl_context.use_private_key_file(key_path, asio::ssl::context::pem); // privacy enhanced mail format
+    this->_ssl_context.use_certificate_chain_file(cert_path);
+    this->_ssl_context.use_private_key_file(key_path, asio::ssl::context::pem); // privacy enhanced mail format
 }
-*/
 
 void RevProxy::run()
 {
@@ -68,4 +73,12 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
     session->start(std::move(backend_sock)); 
     logger::debug("INFO", "proxy", "session started for client", __FILE__, __LINE__);
     accept_caller(std::make_shared<Session>(std::make_unique<HTTPSocket>(_io_context)));
+}
+
+std::unique_ptr<Socket> RevProxy::socket_factory()
+{
+    if (this->_ssl)
+        return std::make_unique<HTTPSSocket>(this->_io_context, this->_ssl_context);
+
+    return std::make_unique<HTTPSocket>(this->_io_context);
 }
