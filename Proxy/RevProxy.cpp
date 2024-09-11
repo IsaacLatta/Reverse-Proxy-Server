@@ -15,8 +15,6 @@ RevProxy::RevProxy(int local_port, const std::string& server_IP, int server_port
     {
         load_certificate(cert_path, key_path);
     }
-    else
-        std::cout << "ssl not detected\n";
 }
 
 void RevProxy::load_certificate(const std::string& cert_path, const std::string& key_path)
@@ -30,7 +28,7 @@ void RevProxy::load_certificate(const std::string& cert_path, const std::string&
 
 void RevProxy::run()
 {
-    auto session = std::make_shared<Session>(std::make_unique<HTTPSocket>(_io_context));
+    auto session = std::make_shared<Session>(socket_factory());
     this->_acceptor->async_accept(session->get_socket()->get_raw_socket(),
     [this, session](const asio::error_code& error)
     {
@@ -43,7 +41,7 @@ void RevProxy::run()
 
 void RevProxy::accept_caller(std::shared_ptr<Session> session)
 {
-    logger::debug("INFO", "proxy", "waiting for client", __FILE__, __LINE__);
+    //logger::debug("INFO", "proxy", "waiting for client", __FILE__, __LINE__);
     this->_acceptor->async_accept(session->get_socket()->get_raw_socket(),
     [this, session](const asio::error_code& error)
     {
@@ -59,20 +57,20 @@ void RevProxy::accept_handler(const asio::error_code& error, const std::shared_p
         accept_caller(session);
         return;
     }
-    logger::debug("INFO", "proxy", "client connected", __FILE__, __LINE__);
-    auto backend_sock = std::make_unique<HTTPSocket>(this->_io_context);
+    //logger::debug("INFO", "proxy", "client connected", __FILE__, __LINE__);
+    auto backend_sock = std::make_unique<HTTPSocket>(this->_io_context); // replace with factory function later
     asio::error_code ec;
     backend_sock->get_raw_socket().connect(this->_backend_endpoint, ec);
     if(ec)
     {
         logger::log(nullptr, "ERROR " + ec.message());
         logger::debug("ERROR", "connect", ec.message(), __FILE__, __LINE__);
-        accept_caller(std::make_shared<Session>(std::make_unique<HTTPSocket>(_io_context)));
+        accept_caller(std::make_shared<Session>(socket_factory()));
         return;
     }
     session->start(std::move(backend_sock)); 
-    logger::debug("INFO", "proxy", "session started for client", __FILE__, __LINE__);
-    accept_caller(std::make_shared<Session>(std::make_unique<HTTPSocket>(_io_context)));
+    //logger::debug("INFO", "proxy", "session started for client", __FILE__, __LINE__);
+    accept_caller(std::make_shared<Session>(socket_factory()));
 }
 
 std::unique_ptr<Socket> RevProxy::socket_factory()

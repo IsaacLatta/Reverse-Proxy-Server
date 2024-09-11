@@ -26,12 +26,13 @@ int main(int argc, char** argv)
     if(argc >= 6 && !strcmp(argv[4],"-https"))
     {
         cert_path = argv[5];
+        std::cout << "Cert path: " << cert_path << "\n";
         key_path = argv[6];
+        std::cout << "Key path: " << key_path << "\n";
         proxy = std::make_unique<RevProxy>(host_port, peer_IP, peer_port, cert_path, key_path, true);
     }
     else
          proxy = std::make_unique<RevProxy>(host_port, peer_IP, peer_port);        
-
     try
     {
         proxy->run();

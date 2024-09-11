@@ -44,9 +44,10 @@ void Session::write_backend(const asio::error_code& error)
 {
     auto self = shared_from_this();
 
-    if(error)
+    logger::debug("INFO", "write_backend", "request received", __FILE__, __LINE__);
+    if(error && error != asio::error::eof)
     {
-        logger::debug("ERROR", "async_read_until", error.message() , __FILE__, __LINE__);
+        logger::debug("ERROR", "async_read_some", error.message() , __FILE__, __LINE__);
         logger::log(self, "ERROR" + error.message());
         return;
     }
@@ -80,6 +81,12 @@ void Session::start(std::unique_ptr<Socket>&& backend_sock)
     self->_sock->do_handshake(
     [self](const asio::error_code& error)
     {
+        if(error)
+        {
+            logger::debug("ERROR", "do_handshake", error.message(), __FILE__, __LINE__);
+            return;
+        }
+        logger::debug("INFO", "handshake complete", "beginning read", __FILE__, __LINE__);
         self->_sock->do_read(self->buffer.data(), self->buffer.size(), 
         [self](const asio::error_code& error, std::size_t bytes)
         {
