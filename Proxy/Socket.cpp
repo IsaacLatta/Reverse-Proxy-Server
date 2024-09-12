@@ -34,6 +34,11 @@ void HTTPSocket::do_read(char* buffer, std::size_t buffer_size, const std::funct
     });
 }
 
+HTTPSocket::~HTTPSocket()
+{
+    this->_socket.close();
+}
+
 asio::ip::tcp::socket& HTTPSSocket::get_raw_socket()
 {
     return this->_socket.next_layer();
@@ -69,4 +74,9 @@ void HTTPSSocket::do_write(char* buffer, std::size_t buffer_size, const std::fun
     {
         callback(error, bytes);
     });
+}
+
+HTTPSSocket::~HTTPSSocket()
+{
+    this->_socket.next_layer().close();
 }

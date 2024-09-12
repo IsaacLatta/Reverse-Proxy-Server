@@ -26,6 +26,7 @@ class HTTPSocket: public Socket
     void do_write(char* buffer, std::size_t buffer_size, const std::function<void(const asio::error_code&, std::size_t)>& callback) override;
     std::string get_IP() override;
     asio::ip::tcp::socket& get_raw_socket() override;
+    ~HTTPSocket() override;
     private:
     asio::ip::tcp::socket _socket;
 };
@@ -39,6 +40,7 @@ class HTTPSSocket : public Socket
     void do_write(char* buffer, std::size_t buffer_size, const std::function<void(const asio::error_code&, std::size_t)>& callback) override;
     std::string get_IP() override;
     asio::ip::tcp::socket& get_raw_socket() override;
+    ~HTTPSSocket() override;
     private:
     asio::ssl::stream<asio::ip::tcp::socket> _socket;
 };
