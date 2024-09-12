@@ -18,6 +18,7 @@ class Session : public std::enable_shared_from_this<Session>
 {
     public:
     long bytes_transferred;
+    std::string req_header, user_agent; 
     std::chrono::time_point<std::chrono::system_clock> start_time;
     std::chrono::time_point<std::chrono::system_clock> RTT_start_time;
     std::chrono::time_point<std::chrono::system_clock> end_time;
@@ -25,11 +26,11 @@ class Session : public std::enable_shared_from_this<Session>
     Session(std::unique_ptr<Socket>&& sock) : _sock(std::move(sock)), bytes_transferred(0) {};
     void start(std::unique_ptr<Socket>&& backend_sock);
     Socket* get_socket();
-    
+
     private:
     std::unique_ptr<Socket> _sock;
     std::unique_ptr<Socket> _backend_sock;
-    std::vector<char> buffer;
+    std::vector<char> _buffer;
     void write_backend(const asio::error_code& error);
     void forward_response(const asio::error_code& error, std::size_t bytes_read);
 };

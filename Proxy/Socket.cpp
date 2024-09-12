@@ -5,6 +5,11 @@ asio::ip::tcp::socket& HTTPSocket::get_raw_socket()
     return this->_socket;
 }
 
+std::string HTTPSocket::get_IP()
+{
+    return this->_socket.remote_endpoint().address().to_string();
+}
+
 void HTTPSocket::do_handshake(const std::function<void(const asio::error_code&)>& callback)
 {
     asio::error_code ec;
@@ -32,6 +37,11 @@ void HTTPSocket::do_read(char* buffer, std::size_t buffer_size, const std::funct
 asio::ip::tcp::socket& HTTPSSocket::get_raw_socket()
 {
     return this->_socket.next_layer();
+}
+
+std::string HTTPSSocket::get_IP()
+{
+    return this->_socket.next_layer().remote_endpoint().address().to_string();
 }
 
 void HTTPSSocket::do_handshake(const std::function<void(const std::error_code& error)>& callback)
