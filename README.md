@@ -36,7 +36,7 @@ cd /path/to/Reverse-Proxy
 
 3. Compile the project:
 ```bash
-g++ -I/path/to/asio -lssl -lcrypto -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
+g++ -I/path/to/asio -lssl -lcrypto -o proxy main.cpp Session.cpp RevProxy.cpp Socket.cpp logger.cpp
 ```
 
 ## Running the program
