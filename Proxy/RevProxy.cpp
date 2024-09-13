@@ -5,7 +5,8 @@ RevProxy::RevProxy(int local_port, const std::string& server_IP, int server_port
     _port(local_port), 
     _backend_port(server_port), 
     _backend_IP(server_IP), 
-    _ssl(ssl)
+    _ssl(ssl),
+    _retries(0)
 {
     this->_endpoint = asio::ip::tcp::endpoint(asio::ip::tcp::v4(), this->_port);
     _acceptor = std::make_shared<asio::ip::tcp::acceptor>(this->_io_context, this->_endpoint);
@@ -48,23 +49,44 @@ void RevProxy::accept_caller(std::shared_ptr<Session> session)
     });
 }
 
+bool RevProxy::is_error(const asio::error_code& error)
+{
+    if(!error)
+    {
+        _retries = 0;
+        return false;
+    }
+
+    logger::debug("ERROR", "async_accept", error.message(), __FILE__, __LINE__);
+    if(_retries > MAX_RETRIES || error.value() == asio::error::bad_descriptor || 
+        asio::error::access_denied || asio::error::address_in_use)
+    {
+        logger::log(nullptr, "FATAL " + error.message());
+        return true;;
+    }
+
+    if(error.value() == asio::error::would_block || asio::error::try_again || asio::error::network_unreachable ||
+      error.value() == asio::error::connection_refused || asio::error::timed_out || asio::error::no_buffer_space ||
+      error.value() == asio::error::host_unreachable)
+    {
+        logger::log(nullptr, "ERROR " + error.message());
+        this->_retries++;
+        sleep(DEFAULT_BACKOFF_MS*_retries);
+    }
+
+    return false;
+}
+
 void RevProxy::accept_handler(const asio::error_code& error, const std::shared_ptr<Session>& session)
 {
-    if(error)
-    {
-        logger::debug("ERROR", "async_accept", error.message(), __FILE__, __LINE__);
-        accept_caller(session);
+    if(is_error(error))
         return;
-    }
-    
-    auto backend_sock = std::make_unique<HTTPSocket>(this->_io_context); // replace with factory function later
+
+    auto backend_sock = std::make_unique<HTTPSocket>(this->_io_context); 
     asio::error_code ec;
     backend_sock->get_raw_socket().connect(this->_backend_endpoint, ec);
-    if(ec)
+    if(is_error(ec))
     {
-        logger::log(nullptr, "ERROR " + ec.message());
-        logger::debug("ERROR", "connect", ec.message(), __FILE__, __LINE__);
-        accept_caller(std::make_shared<Session>(socket_factory()));
         return;
     }
     session->start(std::move(backend_sock)); 

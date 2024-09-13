@@ -6,6 +6,9 @@
 #include <memory>
 #include "Session.h"
 
+#define DEFAULT_BACKOFF_MS 100 
+#define MAX_RETRIES 5
+
 class RevProxy
 {
     public:
@@ -20,11 +23,13 @@ class RevProxy
     asio::ip::tcp::endpoint _backend_endpoint;
     std::string _backend_IP;
     int _port, _backend_port;
+    std::size_t _retries;
     bool _ssl;
 
     void load_certificate(const std::string& cert_path, const std::string& key_path);
     void accept_caller(std::shared_ptr<Session> session);
     void accept_handler(const asio::error_code& error, const std::shared_ptr<Session>& session);
+    bool is_error(const asio::error_code& error);
     std::unique_ptr<Socket> socket_factory();
 };
 

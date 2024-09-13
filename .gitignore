@@ -3,3 +3,4 @@
 /Proxy/*.log
 *.crt
 *.key
+*rev-proxy

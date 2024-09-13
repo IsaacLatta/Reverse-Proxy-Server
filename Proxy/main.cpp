@@ -9,7 +9,7 @@ void display_exit()
     std::string help_msg = "INFO: This proxy server is intended to be ran as a web proxy, by default it will treat all requests as HTTP and logged accordingly.\n"
                             "USAGE: ./rev-proxy <host port> <peer IP> <peer port> -<option> <arguments>...\n"
                             "OPTIONS: -https <certificate path> <key path>: use https, -d: daemonize.\n"
-                            "NOTE: the https option only provides https on the listening side, traffic forwarded to the specified <peer IP> will be unencrypted.\n";
+                            "NOTE: The https option only provides https on the listening side, traffic forwarded to the specified <peer IP> will be unencrypted.\n";
     std::cout << help_msg;
     exit(0);
 }
