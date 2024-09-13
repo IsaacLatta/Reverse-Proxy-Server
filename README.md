@@ -41,7 +41,12 @@ g++ -I/path/to/asio -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
 
 ## Running the program
 
-- The proxy takes 3 command line arguments to run, the port to host the proxy on, the backend server's IP address, and the backend server's port.
+- The proxy takes a minimum of 3 command line arguments to run, the port to host the proxy on, the backend server's IP address, and the backend server's port.
+- To daemonize the process use the -d option.
+- To use https run the program with the -https option, and the path to the certificate and key.
+```bash
+sudo ./proxy 1234 127.0.0.1 12345 /path/to/certificate.crt /path/to/certificate_key.key
+```
 
 - For example to run the proxy on port 1234 and forward to a server on port 12345 on localhost run:
 ```bash
@@ -61,6 +66,9 @@ g++ -I/path/to/asio -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
 ## Troubleshooting
 - If testing over a network, your firewall will likely need to be configured to allow connections on the host port, this is especially likely if the supplied port is below 1000.
 - Errors will logged in the proxy-date.log file.
+- If running with a port below 1024 or using a self signed certificate, the program will likely need to be run with root privileges.
+- Note the https option only provides https support for the listening side of the server.
+- The proxy expects the certificate and key to be in pem format.
 
 ## Contributions
 - If you have any suggestions or improvements, I am absolutley open to them! Feel free to open an issue or submit a pull request.
