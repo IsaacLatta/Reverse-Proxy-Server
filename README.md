@@ -58,9 +58,9 @@ sudo ./proxy 1234 127.0.0.1 12345 /path/to/certificate.crt /path/to/certificate_
 - The proxy accepts incoming network request up to a size of 64KB. To change, modify the BUFFER_SIZE macro in the Session.h file.
 - The proxy will read outgoing data from its backend server until the connection is closed, or it receives the eof error on the socket fd.
 - A new connection is created for each network request, and closed on any errors or when the response forwarding is complete.
-- To see a basic usage message, run the proxy with no arguments:
+- To see a help message, run the proxy with the -h option:
 ```bash
-./proxy
+./proxy -h
 ```
 
 ## Troubleshooting
