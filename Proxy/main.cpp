@@ -1,37 +1,64 @@
 #include "RevProxy.h"
 #include <iostream>
+#include <unistd.h>
+
 
 
 void display_exit()
 {
-    std::string help_msg = "USAGE: ./rev-proxy <host_port> <peer_IP> <peer_port> -<option> <arguments>...\n"
-                            "OPTIONS: -d, daemon the proxy, -https, use https\n";
+    std::string help_msg = "INFO: This proxy server is intended to be ran as a web proxy, by default it will treat all requests as HTTP and logged accordingly.\n"
+                            "USAGE: ./rev-proxy <host port> <peer IP> <peer port> -<option> <arguments>...\n"
+                            "OPTIONS: -https <certificate path> <key path>: use https, -d: daemonize.\n"
+                            "NOTE: the https option only provides https on the listening side, traffic forwarded to the specified <peer IP> will be unencrypted.\n";
     std::cout << help_msg;
     exit(0);
 }
 
-int main(int argc, char** argv)
+std::unique_ptr<RevProxy> proxy_factory(int argc, char** argv)
 {
-    if( argc == 1 || argv[1] == "-h")
-    {
+    if(argc < 4)
         display_exit();
-    }
 
-    std::unique_ptr<RevProxy> proxy;
+    bool https = false;;   
     int host_port = atoi(argv[1]);
     int peer_port = atoi(argv[3]);
     std::string peer_IP(argv[2]), cert_path, key_path;
     if(peer_IP == "localhost") 
         peer_IP = "127.0.0.1";
 
-    if(argc >= 6 && !strcmp(argv[4],"-https"))
+    std::unique_ptr<RevProxy> proxy;
+    for(int i = 4; i < argc; i++)
     {
-        cert_path = argv[5];
-        key_path = argv[6];
-        proxy = std::make_unique<RevProxy>(host_port, peer_IP, peer_port, cert_path, key_path, true);
+        if(!strcmp(argv[i], "-d"))
+        {
+            pid_t pid = fork();
+            if(pid != 0)
+                exit(0);
+        }
+        if(!strcmp(argv[i], "-https"))
+        {
+            if(argc < i + 3)
+                display_exit();
+
+            cert_path = argv[i+1];
+            key_path = argv[i+2];
+            https = true;
+        }
     }
-    else
-         proxy = std::make_unique<RevProxy>(host_port, peer_IP, peer_port);        
+
+    if(https)
+        return std::make_unique<RevProxy>(host_port, peer_IP, peer_port, cert_path, key_path, true);
+    return std::make_unique<RevProxy>(host_port, peer_IP, peer_port); 
+}
+
+int main(int argc, char** argv)
+{
+    if(argc == 1 || argv[1] == "-h")
+    {
+        display_exit();
+    }
+    
+    std::unique_ptr<RevProxy> proxy = proxy_factory(argc, argv);   
     try
     {
         proxy->run();
