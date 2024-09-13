@@ -3,8 +3,8 @@
 ## Description
 
 - This is a Reverse Proxy Server written with standalone ASIO.
-- The Proxy will accept TCP connections a forward incoming connections to it's specified backend server.
-- This Proxy Server was written with the intention of gaining both knowledge and experience in lower level I/O programming, the ASIO library, and the TCP/IP protocol.
+- The Proxy will accept TCP connections a forward incoming HTTP requests to it's specified backend server.
+- This Proxy Server was written with the intention of gaining both knowledge and experience in lower level I/O programming, the ASIO library, TCP/IP and HTTP/HTTPS protocols.
 - This project is still in development, I will likely be making modifications to it in the future, as I intend on using it in future projects.
 
 ## Prerequisites
@@ -36,7 +36,7 @@ cd /path/to/Reverse-Proxy
 
 3. Compile the project:
 ```bash
-g++ -I/path/to/asio -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
+g++ -I/path/to/asio -lssl -lcrypto -o proxy main.cpp Session.cpp RevProxy.cpp logger.cpp
 ```
 
 ## Running the program
